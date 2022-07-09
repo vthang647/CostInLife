@@ -8,6 +8,8 @@ import Color from '../Styles/Color';
 import DashBoardItemUtil from '../Utils/DashBoardItemUtil';
 import Helpers from '../Utils/Helpers';
 
+//icon
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 // database
 import QueryRealmDatabaseSpend from '../Models/QueryRealmDatabaseSpend';
 import QueryRealmDatabaseEarn from '../Models/QueryRealmDatabaseEarn';
@@ -92,15 +94,15 @@ export default class DashBoardItem extends Component {
         </View>
         <View style={ItemStyle.bodyItem}>
           <Text>
-            Sum Earned :${' '}
+            Total amount eaned <FontAwesome5 name="money-bill-wave" />{' '}
             <Text style={{fontWeight: 'bold', backgroundColor: Color.lacay}}>
               {Helpers.setMoney(this.state.sumEarned)}
             </Text>{' '}
           </Text>
         </View>
         <View style={ItemStyle.footerItem}>
-          <Text style={{fontWeight: 'bold'}}>
-            Sum Spend :${' '}
+          <Text>
+            Total amount spent <FontAwesome5 name="money-bill-wave" />{' '}
             <Text
               style={{fontWeight: 'bold', backgroundColor: Color.buttonAdd}}>
               {Helpers.setMoney(this.state.sumSpend)}

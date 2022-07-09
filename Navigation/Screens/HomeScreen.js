@@ -78,7 +78,7 @@ export default class HomeScreen extends Component {
           }}
           keyExtractor={item => item.dsid}
         />
-
+        <View style={{height: 200}}></View>
         {this.state.loading ? <LoadingComponent /> : null}
       </SafeAreaView>
     );

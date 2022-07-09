@@ -16,6 +16,7 @@ const Color = {
   could_: '#a3dff7',
   lacay: '#73c877',
   buttonAdd: '#ff2448',
+  safeColor: '#00d000',
 };
 
 export default Color;

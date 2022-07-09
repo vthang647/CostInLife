@@ -5,7 +5,7 @@ import {View, Text, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
 import Helpers from '../Utils/Helpers';
 
 // icon
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 // Styles
 import Color from '../Styles/Color';
@@ -32,33 +32,35 @@ export default class DetailsComponent extends Component {
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
-              Sum Money spend:{' '}
+              Total amount spent / month:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(sumS)}
+                {Helpers.setMoney(sumS)} <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
-              Spend per day:{' '}
+              Total amount spent / day:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(arravgSpendMonth)}
+                {Helpers.setMoney(arravgSpendMonth)}{' '}
+                <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
-              Sum Money Earned:{' '}
+              Total amount Earned / month:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(sumE)}
+                {Helpers.setMoney(sumE)} <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
-              Earned per day:{' '}
+              Total amount Earned / day:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(arravgEarnMonth)}
+                {Helpers.setMoney(arravgEarnMonth)}{' '}
+                <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>

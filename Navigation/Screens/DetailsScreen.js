@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, Image} from 'react-native';
 
 // icon
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 // database
 import QueryRetriveDay from '../../Models/QueryRetriveDay';
@@ -49,6 +49,7 @@ export default class DetailsScreen extends Component {
       causeTopEarn: [],
       causeTopSpend: [],
       loading: true,
+      displayEmtyScreen: false,
     };
   }
 
@@ -73,6 +74,10 @@ export default class DetailsScreen extends Component {
     });
   }
 
+  isEmt() {
+    return this.state.Months.length == 0 ? true : false;
+  }
+
   async getQuatityMonth() {
     await this.isLoading(true);
     await new Promise((resolve, reject) => {
@@ -87,31 +92,40 @@ export default class DetailsScreen extends Component {
         });
     });
 
-    await new Promise((resolve, reject) => {
-      for (let index = 0; index < this.state.Months.length; index++) {
-        const element = this.state.Months[index].Month;
-        this.dbD
-          .getId_aMonth(element)
-          .then(res => {
-            this.setState({
-              arr_id_in_month: [...this.state.arr_id_in_month, [...res]],
+    if (this.isEmt()) {
+      this.setState({
+        displayEmtyScreen: true,
+      });
+    } else {
+      this.setState({
+        displayEmtyScreen: false,
+      });
+      await new Promise((resolve, reject) => {
+        for (let index = 0; index < this.state.Months.length; index++) {
+          const element = this.state.Months[index].Month;
+          this.dbD
+            .getId_aMonth(element)
+            .then(res => {
+              this.setState({
+                arr_id_in_month: [...this.state.arr_id_in_month, [...res]],
+              });
+              if (index == this.state.Months.length - 1) {
+                resolve();
+              }
+            })
+            .catch(e => {
+              console.log(e);
             });
-            if (index == this.state.Months.length - 1) {
-              resolve();
-            }
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      }
-    });
+        }
+      });
 
-    await this.getSumEarnInMonth();
-    await this.getSumSpendInMonth();
-    await this.getavgEarn_aDay();
-    await this.getavgSpend_aDay();
-    await this.getSelectCauseEarn();
-    await this.getSelectCauseSpend();
+      await this.getSumEarnInMonth();
+      await this.getSumSpendInMonth();
+      await this.getavgEarn_aDay();
+      await this.getavgSpend_aDay();
+      await this.getSelectCauseEarn();
+      await this.getSelectCauseSpend();
+    }
     await this.isLoading(false);
   }
 
@@ -268,55 +282,76 @@ export default class DetailsScreen extends Component {
           height: '100%',
           backgroundColor: Color.dabutchi,
         }}>
-        <ScrollView>
-          {this.state.Months.map((item, index) => {
-            return (
-              <DetailsComponent
-                key={index}
-                item={item}
-                sumE={this.state.arrsumEarnMonth[index]}
-                sumS={this.state.arrsumSpendMonth[index]}
-                arravgEarnMonth={this.state.arravgEarnMonth[index]}
-                arravgSpendMonth={this.state.arravgSpendMonth[index]}
-              />
-            );
-          })}
-          <View style={styless.item}>
-            <Text style={styless.textx}>Cause Earn Top: </Text>
-            {this.state.causeTopEarn.map((item, index) => {
+        {this.state.displayEmtyScreen ? (
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Ionicons name="sad-outline" size={99} />
+            <Text
+              style={{
+                fontFamily: 'Roboto-Medium',
+                fontWeight: '600',
+                fontSize: 12,
+              }}>
+              Empty data ...
+            </Text>
+          </View>
+        ) : (
+          <ScrollView>
+            {this.state.Months.map((item, index) => {
               return (
-                <View key={item.id}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: '900',
-                      lineHeight: 32,
-                    }}>
-                    {item.cause} - {Helpers.setMoney(item.money)} $
-                  </Text>
-                </View>
+                <DetailsComponent
+                  key={index}
+                  item={item}
+                  sumE={this.state.arrsumEarnMonth[index]}
+                  sumS={this.state.arrsumSpendMonth[index]}
+                  arravgEarnMonth={this.state.arravgEarnMonth[index]}
+                  arravgSpendMonth={this.state.arravgSpendMonth[index]}
+                />
               );
             })}
-          </View>
-          <View style={styless.item}>
-            <Text style={styless.textx}>Cause Earn Top: </Text>
-            {this.state.causeTopSpend.map((item, index) => {
-              return (
-                <View key={item.id}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: '900',
-                      lineHeight: 32,
-                    }}>
-                    {item.cause} - {Helpers.setMoney(item.money)} $
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-          <View style={{height: 200}}></View>
-        </ScrollView>
+            <View style={styless.item}>
+              <Text style={styless.textx}>
+                Top 5 Reasons for making money in this month:{' '}
+              </Text>
+              {this.state.causeTopEarn.map((item, index) => {
+                return (
+                  <View key={item.id}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '900',
+                        lineHeight: 32,
+                      }}>
+                      {item.cause} - {Helpers.setMoney(item.money)}{' '}
+                      <FontAwesome5 name="money-bill-wave" />
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+            <View style={styless.item}>
+              <Text style={styless.textx}>
+                Top 5 Reasons to spend money in this month:{' '}
+              </Text>
+              {this.state.causeTopSpend.map((item, index) => {
+                return (
+                  <View key={item.id}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '900',
+                        lineHeight: 32,
+                      }}>
+                      {item.cause} - {Helpers.setMoney(item.money)}{' '}
+                      <FontAwesome5 name="money-bill-wave" />
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+            <View style={{height: 200}}></View>
+          </ScrollView>
+        )}
 
         {this.state.loading ? <LoadingComponent /> : null}
       </View>

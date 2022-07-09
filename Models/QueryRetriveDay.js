@@ -1,6 +1,6 @@
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const db = openDatabase({name: 'CostLifeDatabase10.db'});
+const db = openDatabase({name: 'CostLifeDatabase11.db'});
 
 export default class QueryRetriveDay {
   constructor() {
