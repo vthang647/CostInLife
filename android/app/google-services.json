@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "44405175272",
+    "project_id": "costinlife-94ae1",
+    "storage_bucket": "costinlife-94ae1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44405175272:android:4f6d255603784335c02a5d",
+        "android_client_info": {
+          "package_name": "com.costinlife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44405175272-ppc3brne12857023mjtr9aa84fim49au.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.costinlife",
+            "certificate_hash": "c9e9d94e32a94dcb5f16fe2c098a66f9fc1b1a58"
+          }
+        },
+        {
+          "client_id": "44405175272-7cojjdi57l20mu0ma7s6hfb0vg69kcq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE6txJ-Nx3xJ3hLiORxk-2OoOsbU4c9aU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "44405175272-7cojjdi57l20mu0ma7s6hfb0vg69kcq1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
