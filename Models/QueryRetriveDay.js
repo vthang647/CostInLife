@@ -1,6 +1,6 @@
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const db = openDatabase({name: 'CostLifeDatabase11.db'});
+const db = openDatabase({name: 'CostLifeDatabase12.db'});
 
 export default class QueryRetriveDay {
   constructor() {
@@ -68,7 +68,7 @@ export default class QueryRetriveDay {
     return new Promise((resolve, reject) => {
       db.transaction(function (txn) {
         txn.executeSql(
-          'SELECT * FROM day_spending',
+          'SELECT * FROM day_spending ORDER BY timestamp DESC',
           [],
           function (tx, res) {
             var temp = [];
@@ -132,7 +132,7 @@ export default class QueryRetriveDay {
     return new Promise((resolve, reject) => {
       db.transaction(function (txn) {
         txn.executeSql(
-          'SELECT Month, COUNT(dsid) as numday FROM day_spending group by Month',
+          'SELECT dsid, Month, timestamp, COUNT(dsid) as numday FROM day_spending group by Month ORDER BY timestamp DESC',
           [],
           function (tx, res) {
             var temp = [];

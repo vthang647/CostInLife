@@ -17,6 +17,7 @@ const Color = {
   lacay: '#73c877',
   buttonAdd: '#ff2448',
   safeColor: '#00d000',
+  unsafeColor: '#ff2e3c',
 };
 
 export default Color;

@@ -16,7 +16,8 @@ export default class DetailsComponent extends Component {
   }
 
   render() {
-    let {item, sumE, sumS, arravgEarnMonth, arravgSpendMonth} = this.props;
+    let {item, sumE, sumP, avgE, avgP} = this.props;
+
     return (
       <ScrollView>
         <View style={styles.container}>
@@ -32,23 +33,42 @@ export default class DetailsComponent extends Component {
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
+              <Text
+                style={{
+                  backgroundColor: Color.unsafeColor,
+                  color: '#ffffff',
+                }}>
+                +
+              </Text>{' '}
               Total amount spent / month:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(sumS)} <FontAwesome5 name="money-bill-wave" />
+                {Helpers.setMoney(sumP)} <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
+              <Text
+                style={{
+                  backgroundColor: Color.unsafeColor,
+                  color: '#ffffff',
+                }}>
+                +
+              </Text>{' '}
               Total amount spent / day:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(arravgSpendMonth)}{' '}
-                <FontAwesome5 name="money-bill-wave" />
+                {Helpers.setMoney(avgP)} <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
+              <Text
+                style={{
+                  backgroundColor: Color.safeColor,
+                }}>
+                +
+              </Text>{' '}
               Total amount Earned / month:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
                 {Helpers.setMoney(sumE)} <FontAwesome5 name="money-bill-wave" />
@@ -57,10 +77,15 @@ export default class DetailsComponent extends Component {
           </View>
           <View style={styles.item}>
             <Text style={styles.textx}>
+              <Text
+                style={{
+                  backgroundColor: Color.safeColor,
+                }}>
+                +
+              </Text>{' '}
               Total amount Earned / day:{' '}
               <Text style={{fontSize: 16, fontWeight: '900', lineHeight: 32}}>
-                {Helpers.setMoney(arravgEarnMonth)}{' '}
-                <FontAwesome5 name="money-bill-wave" />
+                {Helpers.setMoney(avgE)} <FontAwesome5 name="money-bill-wave" />
               </Text>
             </Text>
           </View>

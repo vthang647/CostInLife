@@ -1,6 +1,6 @@
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const db = openDatabase({name: 'CostLifeDatabase11.db'});
+const db = openDatabase({name: 'CostLifeDatabase12.db'});
 
 export default class QueryRealmDatabaseEarn {
   constructor() {
@@ -73,7 +73,6 @@ export default class QueryRealmDatabaseEarn {
           'SELECT * FROM earn_cost',
           [],
           function (tx, res) {
-            console.log('result: ', res.rows.item(res.rows.length - 1));
             var temp = [];
             for (let i = 0; i < res.rows.length; ++i) {
               temp.push(res.rows.item(i));
@@ -92,10 +91,9 @@ export default class QueryRealmDatabaseEarn {
     return new Promise((resolve, reject) => {
       db.transaction(function (txn) {
         txn.executeSql(
-          'SELECT * FROM earn_cost where timestamp like ?',
+          'SELECT * FROM earn_cost where timestamp like ? ORDER BY timestamp DESC',
           [today + '%'],
           function (tx, res) {
-            console.log('result earn: ', res.rows.length);
             var temp = [];
             for (let i = 0; i < res.rows.length; ++i) {
               temp.push(res.rows.item(i));
@@ -181,26 +179,29 @@ export default class QueryRealmDatabaseEarn {
   }
 
   insert(spend_object) {
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'INSERT INTO earn_cost (id, money, cause, timestamp, status, dsid) VALUES (?,?,?,?,?,?)',
-        [
-          spend_object.id,
-          spend_object.money,
-          spend_object.cause,
-          spend_object.timestamp,
-          spend_object.status,
-          spend_object.dsid,
-        ],
-        (tx, results) => {
-          console.log('Results', results.rowsAffected);
-          if (results.rowsAffected > 0) {
-            console.log('add successfully!');
-          } else {
-            console.log('add fail!');
-          }
-        },
-      );
+    return new Promise((resolve, reject) => {
+      db.transaction(function (tx) {
+        tx.executeSql(
+          'INSERT INTO earn_cost (id, money, cause, timestamp, status, dsid) VALUES (?,?,?,?,?,?)',
+          [
+            spend_object.id,
+            spend_object.money,
+            spend_object.cause,
+            spend_object.timestamp,
+            spend_object.status,
+            spend_object.dsid,
+          ],
+          (tx, results) => {
+            console.log('Results', results.rowsAffected);
+            if (results.rowsAffected > 0) {
+              console.log('add successfully!');
+              resolve(true);
+            } else {
+              console.log('add fail!');
+            }
+          },
+        );
+      });
     });
   }
 

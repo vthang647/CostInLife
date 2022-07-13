@@ -26,60 +26,33 @@ export default class DashBoardItem extends Component {
     };
   }
 
-  componentDidMount() {
-    this.initial();
-    this.willFocusSubscription = this.props.navigation.addListener(
-      'focus',
-      () => {
-        this.selectSumMoneySpendPerDay();
-        this.selectSumMoneyEarnPerDay();
-      },
-    );
-  }
-
-  componentWillUnmount() {
-    this.willFocusSubscription();
-  }
-
-  async initial() {
-    await this.selectSumMoneySpendPerDay();
-    await this.selectSumMoneyEarnPerDay();
-  }
-
-  selectSumMoneySpendPerDay() {
-    return new Promise((resolve, reject) => {
+  render() {
+    let {key, navigation, item} = this.props.item;
+    const a = () => {
       this.dbS
         .getselectSumDsid(this.state.id)
         .then(res => {
           this.setState({sumSpend: res[0].sum});
-          resolve(res);
         })
         .catch(err => {
           console.log(err);
           this.setState({sumSpend: 0});
-          reject(err);
         });
-    });
-  }
+    };
+    a();
 
-  selectSumMoneyEarnPerDay() {
-    return new Promise((resolve, reject) => {
+    const b = () => {
       this.dbE
         .getselectSumDsid(this.state.id)
         .then(res => {
           this.setState({sumEarned: res[0].sum});
-          resolve(res);
         })
         .catch(err => {
           console.log(err);
           this.setState({sumEarned: 0});
-          reject(err);
         });
-    });
-  }
-
-  render() {
-    let {key, navigation, item} = this.props.item;
+    };
+    b();
     return (
       <TouchableOpacity
         style={ItemStyle.container}
@@ -96,7 +69,8 @@ export default class DashBoardItem extends Component {
           <Text>
             Total amount eaned <FontAwesome5 name="money-bill-wave" />{' '}
             <Text style={{fontWeight: 'bold', backgroundColor: Color.lacay}}>
-              {Helpers.setMoney(this.state.sumEarned)}
+              {' '}
+              {Helpers.setMoney(this.state.sumEarned)}{' '}
             </Text>{' '}
           </Text>
         </View>
@@ -104,8 +78,13 @@ export default class DashBoardItem extends Component {
           <Text>
             Total amount spent <FontAwesome5 name="money-bill-wave" />{' '}
             <Text
-              style={{fontWeight: 'bold', backgroundColor: Color.buttonAdd}}>
-              {Helpers.setMoney(this.state.sumSpend)}
+              style={{
+                fontWeight: 'bold',
+                backgroundColor: Color.buttonAdd,
+                color: '#fff',
+              }}>
+              {' '}
+              {Helpers.setMoney(this.state.sumSpend)}{' '}
             </Text>
           </Text>
         </View>

@@ -41,8 +41,8 @@ export default class CreateNewScreen extends Component {
     this.dbSpend = new QueryRealmDatabaseSpend();
     this.dbEarn = new QueryRealmDatabaseEarn();
     this.state = {
-      labelMoneySpend: 'Money Spend',
-      labelMoneyEarn: 'Money Earn',
+      labelMoneySpend: 'Money Spent',
+      labelMoneyEarn: 'Money Earned',
       dataTableSpend: [],
       dataTableEarn: [],
       loading: true,
@@ -70,7 +70,7 @@ export default class CreateNewScreen extends Component {
   setLoading(val) {
     return new Promise((resolve, reject) => {
       this.setState({loading: val});
-      resolve(this.state.loading);
+      resolve();
     });
   }
   // ------------------------Spend------vv-----------------
@@ -146,10 +146,16 @@ export default class CreateNewScreen extends Component {
   };
 
   handleButtonAddEarn = info => {
-    this.dbEarn.insert(info);
-    this.selectSumMoneyEarnPerDay();
-    this.preLsEarnCost();
+    this.insertE(info);
   };
+
+  async insertE(info) {
+    await this.setLoading(true);
+    await this.dbEarn.insert(info);
+    await this.selectSumMoneyEarnPerDay();
+    await this.preLsEarnCost();
+    await this.setLoading(false);
+  }
 
   selectSumMoneyEarnPerDay() {
     return new Promise((resolve, reject) => {
@@ -185,10 +191,11 @@ export default class CreateNewScreen extends Component {
   // Retrive Queryday
   insertDaySpending() {
     const day = new Date();
+    const mon = day.getMonth() + 1 + ' ' + day.getFullYear();
     let daySpend = {
       dsid: uuidv4(),
       timestamp: DashBoardItemUtil.refreshHeader(day),
-      Month: day.getMonth() + 1,
+      Month: mon,
       status: true,
     };
 
@@ -227,6 +234,26 @@ export default class CreateNewScreen extends Component {
           backgroundColor: Color.dabutchi,
         }}>
         <ScrollView nestedScrollEnabled={true}>
+          <View
+            style={{
+              marginTop: 18,
+              borderTopWidth: 1,
+              marginLeft: 9,
+              paddingTop: 3,
+              backgroundColor: Color.unsafeColor,
+              padding: 3,
+            }}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontFamily: 'Roboto-Medium',
+                fontWeight: 'bold',
+                color: '#fff',
+              }}>
+              Spent Today
+            </Text>
+          </View>
+
           <View style={styles.container}>
             <InputInfoComponent
               handleButtonAdd={this.handleButtonAddSpend}
@@ -240,6 +267,24 @@ export default class CreateNewScreen extends Component {
               labelMoney={this.state.labelMoneySpend}
               handleButtonDelete={this.handleButtonDeleteSpend}
             />
+          </View>
+          <View
+            style={{
+              marginTop: 18,
+              borderTopWidth: 1,
+              marginLeft: 9,
+              paddingTop: 3,
+              backgroundColor: Color.safeColor,
+              padding: 3,
+            }}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontFamily: 'Roboto-Medium',
+                fontWeight: 'bold',
+              }}>
+              Earned Today
+            </Text>
           </View>
 
           <View style={styles.container}>

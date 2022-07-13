@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {View, Text, ScrollView, StyleSheet, Image} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, Animated} from 'react-native';
 
 // icon
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // database
 import QueryRetriveDay from '../../Models/QueryRetriveDay';
@@ -31,40 +32,37 @@ import Helpers from '../../Utils/Helpers';
 export default class DetailsScreen extends Component {
   constructor(props) {
     super(props);
-
     this.dbD = new QueryRetriveDay();
     this.dbE = new QueryRealmDatabaseEarn();
     this.dbS = new QueryRealmDatabaseSpend();
     this.state = {
+      offset: new Animated.Value(0),
       Months: [],
+      causeTopEarn: [],
+      causeTopSpend: [],
+      arrsumSpendMonth: [],
+      arrsumEarnMonth: [],
+      arravgSpendMonth: [],
+      arravgEarnMonth: [],
       arr_id_in_month: [],
       avgEarnPerDay: 0,
       avgSpendPerDay: 0,
       sumSpendMonth: 0,
       sumEarnMonth: 0,
-      arrsumSpendMonth: [],
-      arrsumEarnMonth: [],
-      arravgSpendMonth: [],
-      arravgEarnMonth: [],
-      causeTopEarn: [],
-      causeTopSpend: [],
       loading: true,
       displayEmtyScreen: false,
     };
   }
 
   componentDidMount() {
-    this.getQuatityMonth();
-    this.willFocusSubscription = this.props.navigation.addListener(
-      'focus',
-      () => {
-        this.updateState();
-      },
-    );
+    // this.getQuatityMonth();
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.getQuatityMonth();
+    });
   }
 
-  updateState() {
-    this.getQuatityMonth();
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   isLoading(val) {
@@ -74,23 +72,9 @@ export default class DetailsScreen extends Component {
     });
   }
 
-  isEmt() {
-    return this.state.Months.length == 0 ? true : false;
-  }
-
   async getQuatityMonth() {
     await this.isLoading(true);
-    await new Promise((resolve, reject) => {
-      this.dbD
-        .getMonth()
-        .then(res => {
-          this.setState({Months: [...res]});
-          resolve(this.state.Months);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    });
+    await this.getMonths();
 
     if (this.isEmt()) {
       this.setState({
@@ -100,25 +84,7 @@ export default class DetailsScreen extends Component {
       this.setState({
         displayEmtyScreen: false,
       });
-      await new Promise((resolve, reject) => {
-        for (let index = 0; index < this.state.Months.length; index++) {
-          const element = this.state.Months[index].Month;
-          this.dbD
-            .getId_aMonth(element)
-            .then(res => {
-              this.setState({
-                arr_id_in_month: [...this.state.arr_id_in_month, [...res]],
-              });
-              if (index == this.state.Months.length - 1) {
-                resolve();
-              }
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        }
-      });
-
+      await this.getMonthsArr();
       await this.getSumEarnInMonth();
       await this.getSumSpendInMonth();
       await this.getavgEarn_aDay();
@@ -127,6 +93,25 @@ export default class DetailsScreen extends Component {
       await this.getSelectCauseSpend();
     }
     await this.isLoading(false);
+  }
+
+  isEmt() {
+    return this.state.Months.length == 0 ? true : false;
+  }
+
+  getMonths() {
+    return new Promise((resolve, reject) => {
+      this.dbD
+        .getMonth()
+        .then(res => {
+          this.setState({Months: [...res]}, () => {
+            resolve(this.state.Months);
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    });
   }
 
   getSelectCauseEarn() {
@@ -161,8 +146,38 @@ export default class DetailsScreen extends Component {
     });
   }
 
+  getMonthsArr() {
+    return new Promise((resolve, reject) => {
+      this.setState({
+        arr_id_in_month: [],
+      });
+      for (let index = 0; index < this.state.Months.length; index++) {
+        const element = this.state.Months[index].Month;
+        this.dbD
+          .getId_aMonth(element)
+          .then(res => {
+            this.setState({
+              arr_id_in_month: [...this.state.arr_id_in_month, [...res]],
+            });
+
+            if (index == this.state.Months.length - 1) {
+              resolve();
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    });
+  }
+
   getSumEarnInMonth() {
     return new Promise((resolve, reject) => {
+      this.setState({
+        arrsumEarnMonth: [],
+        sumEarnMonth: 0,
+      });
+
       for (let j = 0; j < this.state.arr_id_in_month.length; j++) {
         const element = this.state.arr_id_in_month[j];
         for (let i = 0; i < element.length; i++) {
@@ -170,23 +185,25 @@ export default class DetailsScreen extends Component {
           this.dbE
             .getselectSumDsid(item)
             .then(res => {
+              let a = this.state.sumEarnMonth + parseInt(res[0].sum);
               this.setState(
-                (previousState, currentProps) => {
-                  return {
-                    sumEarnMonth: previousState.sumEarnMonth + res[0].sum,
-                  };
+                {
+                  sumEarnMonth: a,
                 },
                 () => {
-                  if (i == element.length - 1) {
-                    this.setState((previousState, currentProps) => ({
+                  if (
+                    j == this.state.arr_id_in_month.length - 1 &&
+                    i == element.length - 1
+                  ) {
+                    this.setState({
                       arrsumEarnMonth: [
-                        ...previousState.arrsumEarnMonth,
+                        ...this.state.arrsumEarnMonth,
                         this.state.sumEarnMonth,
                       ],
                       sumEarnMonth: 0,
-                    }));
-                  }
-                  if (j == this.state.arr_id_in_month.length - 1) {
+                    });
+
+                    // a = 0;
                     resolve(this.state.arrsumEarnMonth);
                   }
                 },
@@ -202,6 +219,11 @@ export default class DetailsScreen extends Component {
 
   getSumSpendInMonth() {
     return new Promise((resolve, reject) => {
+      this.setState({
+        arrsumSpendMonth: [],
+        sumSpendMonth: 0,
+      });
+
       for (let j = 0; j < this.state.arr_id_in_month.length; j++) {
         const element = this.state.arr_id_in_month[j];
 
@@ -210,23 +232,25 @@ export default class DetailsScreen extends Component {
           this.dbS
             .getselectSumDsid(item)
             .then(res => {
+              let a = this.state.sumSpendMonth + parseInt(res[0].sum);
               this.setState(
-                (previousState, currentProps) => {
-                  return {
-                    sumSpendMonth: previousState.sumSpendMonth + res[0].sum,
-                  };
+                {
+                  sumSpendMonth: a,
                 },
                 () => {
-                  if (i == element.length - 1) {
-                    this.setState((previousState, currentProps) => ({
+                  if (
+                    j == this.state.arr_id_in_month.length - 1 &&
+                    i == element.length - 1
+                  ) {
+                    this.setState({
                       arrsumSpendMonth: [
-                        ...previousState.arrsumSpendMonth,
+                        ...this.state.arrsumSpendMonth,
                         this.state.sumSpendMonth,
                       ],
                       sumSpendMonth: 0,
-                    }));
-                  }
-                  if (j == this.state.arr_id_in_month.length - 1) {
+                    });
+
+                    // a = 0;
                     resolve(this.state.arrsumSpendMonth);
                   }
                 },
@@ -234,7 +258,6 @@ export default class DetailsScreen extends Component {
             })
             .catch(e => {
               console.log(e);
-              reject(e);
             });
         }
       }
@@ -243,38 +266,64 @@ export default class DetailsScreen extends Component {
 
   getavgEarn_aDay() {
     return new Promise((resolve, reject) => {
+      this.setState({
+        arravgEarnMonth: [],
+      });
       for (let index = 0; index < this.state.Months.length; index++) {
         const element = this.state.Months[index];
         let SumMoney = this.state.arrsumEarnMonth[index];
+
         let dayuse = element.numday;
 
         let avg = parseInt(SumMoney) / parseInt(dayuse);
-
-        this.setState({
-          arravgEarnMonth: [...this.state.arravgEarnMonth, Math.floor(avg)],
-        });
+        this.setState(
+          {
+            arravgEarnMonth: [...this.state.arravgEarnMonth, Math.floor(avg)],
+          },
+          () => {
+            resolve();
+          },
+        );
       }
-      resolve(this.state.arravgEarnMonth);
     });
   }
 
   getavgSpend_aDay() {
     return new Promise((resolve, reject) => {
+      this.setState({
+        arravgSpendMonth: [],
+      });
       for (let index = 0; index < this.state.Months.length; index++) {
         const element = this.state.Months[index];
         let SumMoney = this.state.arrsumSpendMonth[index];
         let dayuse = element.numday;
+
         let avg = parseInt(SumMoney) / parseInt(dayuse);
 
-        this.setState({
-          arravgSpendMonth: [...this.state.arravgSpendMonth, Math.floor(avg)],
-        });
+        this.setState(
+          {
+            arravgSpendMonth: [...this.state.arravgSpendMonth, Math.floor(avg)],
+          },
+          () => {
+            resolve();
+          },
+        );
       }
-      resolve(this.state.arravgSpendMonth);
     });
   }
 
   render() {
+    const isCloseToBottom = ({
+      layoutMeasurement,
+      contentOffset,
+      contentSize,
+    }) => {
+      const paddingToBottom = 20;
+      return (
+        layoutMeasurement.height + contentOffset.y >=
+        contentSize.height - paddingToBottom
+      );
+    };
     return (
       <View
         style={{
@@ -296,16 +345,40 @@ export default class DetailsScreen extends Component {
             </Text>
           </View>
         ) : (
-          <ScrollView>
+          <ScrollView
+            onScroll={({nativeEvent}) => {
+              if (isCloseToBottom(nativeEvent)) {
+                this.props.navigation.setOptions({
+                  tabBarStyle: {
+                    display: 'none',
+                  },
+                });
+              } else if (nativeEvent.contentOffset.y == 0) {
+                this.props.navigation.setOptions({
+                  tabBarStyle: {
+                    display: 'flex',
+                    position: 'absolute',
+                    bottom: 25,
+                    left: 20,
+                    right: 20,
+                    elevation: 8,
+                    backgroundcolor: Color.blue_,
+                    borderRadius: 15,
+                    height: 63,
+                    opacity: 0.9,
+                  },
+                });
+              }
+            }}>
             {this.state.Months.map((item, index) => {
               return (
                 <DetailsComponent
-                  key={index}
+                  key={item.dsid}
                   item={item}
                   sumE={this.state.arrsumEarnMonth[index]}
-                  sumS={this.state.arrsumSpendMonth[index]}
-                  arravgEarnMonth={this.state.arravgEarnMonth[index]}
-                  arravgSpendMonth={this.state.arravgSpendMonth[index]}
+                  sumP={this.state.arrsumSpendMonth[index]}
+                  avgE={this.state.arravgEarnMonth[index]}
+                  avgP={this.state.arravgSpendMonth[index]}
                 />
               );
             })}
@@ -349,7 +422,7 @@ export default class DetailsScreen extends Component {
                 );
               })}
             </View>
-            <View style={{height: 200}}></View>
+            <View style={{height: 100}}></View>
           </ScrollView>
         )}
 

@@ -1,6 +1,6 @@
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const db = openDatabase({name: 'CostLifeDatabase11.db'});
+const db = openDatabase({name: 'CostLifeDatabase12.db'});
 
 export default class QueryRealmDatabaseSpend {
   constructor() {
@@ -91,7 +91,7 @@ export default class QueryRealmDatabaseSpend {
     return new Promise((resolve, reject) => {
       db.transaction(function (txn) {
         txn.executeSql(
-          'SELECT * FROM spend_cost where timestamp like ?',
+          'SELECT * FROM spend_cost where timestamp like ? ORDER BY timestamp DESC',
           [today + '%'],
           function (tx, res) {
             var temp = [];

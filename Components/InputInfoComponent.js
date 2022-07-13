@@ -62,14 +62,14 @@ export default class InputInfoComponent extends Component {
 
   render() {
     let sum = this.props.sumM;
+    let labelMoney = this.props.labelMoney;
 
     return (
       <SafeAreaView>
         <View style={styles.viewInput}>
           <View style={styles.viewInputDimensionPayment}>
             <Text style={styles.labelSpend}>
-              {this.props.labelMoney}{' '}
-              <MaterialIcons size={18} name="payments" />
+              {labelMoney} <MaterialIcons size={18} name="payments" />
             </Text>
             <TextInputMask
               style={styles.Input}
@@ -102,7 +102,8 @@ export default class InputInfoComponent extends Component {
 
           <View style={styles.viewInputDimensionReason}>
             <Text style={styles.label}>
-              Reason <MaterialIcons size={18} name="edit" />
+              Why ?
+              <MaterialIcons size={18} name="edit" />
             </Text>
 
             <TextInput
@@ -148,7 +149,7 @@ export default class InputInfoComponent extends Component {
 
                 fontSize: 14,
               }}>
-              Sum {this.props.labelMoney} : {Helpers.setMoney(sum)}
+              Total {labelMoney} : {Helpers.setMoney(sum)}
             </Text>
           </View>
           <TouchableOpacity

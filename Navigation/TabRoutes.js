@@ -24,10 +24,11 @@ function TabRoutes() {
           bottom: 25,
           left: 20,
           right: 20,
-          elevation: 0,
+          elevation: 8,
           backgroundcolor: Color.blue_,
           borderRadius: 15,
           height: 63,
+          opacity: 0.9,
         },
 
         tabBarIcon: ({focused, size, color}) => {
